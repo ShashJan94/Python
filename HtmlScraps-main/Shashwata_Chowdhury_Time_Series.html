@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Covid</title>
+
+    <style>
+        #chart {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            max-width: 70%;
+            
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="chart">"Hello! I am a Chart- Check Below </canvas>
+
+    <script src="https://code.jscharting.com/2.9.0/jscharting.js"> </script>
+    
+    <script type="text/javascript">
+        //read csv file
+        fetch('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv')
+            .then(function (response) {
+                return response.text();
+            })
+            .then(function (data) {
+                let info = extractData(data);
+                drawChart(info);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+        //get data from csv table
+        extractData = (data) =>  {
+            const total_cases_ = 'total_cases';
+            let dataAsJson = JSC.csv2Json(data);
+            let poland_ = [], bangladesh_ = [];
+            dataAsJson.forEach(function (row) {
+
+                if (row.continent === 'Europe' && row.location === 'Poland') {
+                        poland_.push({ x: row.date, y: row[total_cases_] });
+                }
+
+                if (row.continent === 'Asia' && row.location === 'Bangladesh') {
+                        bangladesh_.push({ x: row.date, y: row[total_cases_] });
+                }
+
+            });
+
+            return [
+                { name: 'Poland', points: poland_ },
+                { name: 'Bangladesh', points: bangladesh_ }
+            ];
+        }
+
+        //draw the chart with JSCharting
+        drawChart = (info) => {
+            JSC.Chart('chart', {
+                series: info
+            });
+        }
+    </script>
+    
+    
+
+</body>
+
+</html>
